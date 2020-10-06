@@ -28,7 +28,7 @@ Bandwidth calculation for streaming server - webservice | Rewrite from my origin
 
 **Output**
 
-    {"server_bandwidth":15625.0}
+    {"result":15625.0}
 
 ### Determine the amount of data used for the streaming
 
@@ -36,4 +36,4 @@ Bandwidth calculation for streaming server - webservice | Rewrite from my origin
 
 **Output**
 
-    {"bandwidth_used":164794.921875}
+    {"result":164794.921875}

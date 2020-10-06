@@ -11,12 +11,11 @@ from pydantic import BaseModel
 tags_metadata = [
     {
         'name': 'bwserver',
-        'description': 'Determine necessary server bandwidth; bitrate in kb/s'
+        'description': 'Determine necessary server bandwidth'
     },
     {
         'name': 'serverusagebw',
         'description': 'Determine the amount of data used for the streaming; '
-                       'bitrate in kb/s'
     }
 ]
 
@@ -37,7 +36,7 @@ class BwserverJsonReq(BaseModel):
 class BwserverJsonRes(BaseModel):
     """Define element (with type) that you get inside the response."""
 
-    server_bandwidth: float
+    result: float
 
 
 class ServerusagebwJsonReq(BaseModel):
@@ -52,7 +51,7 @@ class ServerusagebwJsonReq(BaseModel):
 class ServerusagebwJsonRes(BaseModel):
     """Define element (with type) that you get inside the response."""
 
-    bandwidth_used: float
+    result: float
 
 
 def compute_bwserver(bitrate: float, nblisteners: float) -> float:
@@ -68,20 +67,28 @@ def compute_serverusagebw(bitrate: float, nbdays: float, nbhours: float,
 
 @app.post('/bwserver', tags=['bwserver'], response_model=BwserverJsonRes,
           response_class=ORJSONResponse,
-          response_description='server_bandwidth -> Mib/s')
+          response_description='result -> Mib/s')
 async def bwserver(body: BwserverJsonReq):
-    """Endpoint to determine necessary server bandwidth."""
+    """
+    Endpoint to determine necessary server bandwidth.
+
+    Bitrate in kb/s.
+    """
     bitrate: float = body.bitrate
     nblisteners: float = body.nblisteners
     result: float = compute_bwserver(bitrate=bitrate, nblisteners=nblisteners)
-    return {'server_bandwidth': result}
+    return {'result': result}
 
 
 @app.post('/serverusagebw', tags=['serverusagebw'],
           response_model=ServerusagebwJsonRes, response_class=ORJSONResponse,
-          response_description='bandwidth_used -> GiB')
+          response_description='result -> GiB')
 async def serverusagebw(body: ServerusagebwJsonReq):
-    """Endpoint to determine the amount of data used for the streaming."""
+    """
+    Endpoint to determine the amount of data used for the streaming.
+
+    Bitrate in kb/s.
+    """
     bitrate: float = body.bitrate
     nbdays: float = body.nbdays
     nbhours: float = body.nbhours
@@ -89,4 +96,4 @@ async def serverusagebw(body: ServerusagebwJsonReq):
     result: float = compute_serverusagebw(bitrate=bitrate, nbdays=nbdays,
                                           nbhours=nbhours,
                                           nblisteners=nblisteners)
-    return {'bandwidth_used': result}
+    return {'result': result}

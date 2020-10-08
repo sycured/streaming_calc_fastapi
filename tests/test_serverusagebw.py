@@ -1,4 +1,6 @@
+"""Test /serverusagebw endpoint."""
 from fastapi.testclient import TestClient
+
 from main import app
 
 bitrate = 64
@@ -11,6 +13,7 @@ client = TestClient(app)
 
 
 def test_1():
+    """With int."""
     response = client.post(url='/serverusagebw',
                            json={'bitrate': bitrate,
                                  'nbdays': nbdays,
@@ -19,10 +22,11 @@ def test_1():
                                  }
                            )
     assert response.status_code == 200
-    assert response.json() == {"result": 164794.921875}
+    assert response.json() == {'result': 164794.921875}
 
 
 def test_2():
+    """With float."""
     response = client.post(url='/serverusagebw',
                            json={'bitrate': bitrate_float,
                                  'nbdays': nbdays,

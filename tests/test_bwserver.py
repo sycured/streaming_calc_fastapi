@@ -1,4 +1,6 @@
+"""Test /bwserver endpoint."""
 from fastapi.testclient import TestClient
+
 from main import app
 
 bitrate = 64
@@ -9,6 +11,7 @@ client = TestClient(app)
 
 
 def test_1():
+    """With int."""
     response = client.post(url='/bwserver',
                            json={'nblisteners': nblisteners,
                                  'bitrate': bitrate}
@@ -18,6 +21,7 @@ def test_1():
 
 
 def test_2():
+    """With float."""
     response = client.post(url='/bwserver',
                            json={'nblisteners': nblisteners,
                                  'bitrate': bitrate_float}

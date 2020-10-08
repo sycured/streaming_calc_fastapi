@@ -1,3 +1,4 @@
+"""Add parent directory to help import to find main.py."""
 from os.path import abspath, dirname
 from sys import path
 

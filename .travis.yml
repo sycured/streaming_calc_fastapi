@@ -1,0 +1,30 @@
+language: minimal
+dist: bionic
+
+git:
+  quiet: true
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_18.04/ /'
+        key_url: 'https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_18.04/Release.key'
+    update: true
+    packages:
+      - buildah
+      - yum
+
+before_install:
+  - sudo apt-get upgrade -y
+
+before_script:
+  - echo $quayiopassword | buildah login -u $quayiouser --password-stdin quay.io
+
+script:
+  - sudo ./build.sh
+
+after_success:
+  - sudo buildah push scfa:latest docker://quay.io/$quayiouser/scfa:latest
+
+after_script:
+  - docker logout quay.io

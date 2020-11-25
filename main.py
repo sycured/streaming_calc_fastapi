@@ -54,17 +54,6 @@ class ServerusagebwJsonRes(BaseModel):
     result: float
 
 
-async def compute_bwserver(bitrate: float, nblisteners: float) -> float:
-    """Determine necessary server bandwidth."""
-    return 125 * nblisteners * bitrate / 128
-
-
-async def compute_serverusagebw(bitrate: float, nbdays: float, nbhours: float,
-                                nblisteners: float) -> float:
-    """Determine the amount of data used for the streaming."""
-    return 28125 * nbdays * nbhours * bitrate * nblisteners / 65536
-
-
 @app.post('/bwserver', tags=['bwserver'], response_model=BwserverJsonRes,
           response_class=ORJSONResponse,
           response_description='result -> Mib/s')
@@ -76,9 +65,7 @@ async def bwserver(body: BwserverJsonReq):
     """
     bitrate: float = body.bitrate
     nblisteners: float = body.nblisteners
-    result: float = await compute_bwserver(bitrate=bitrate,
-                                           nblisteners=nblisteners)
-    return {'result': result}
+    return {'result': 125 * nblisteners * bitrate / 128}
 
 
 @app.post('/serverusagebw', tags=['serverusagebw'],
@@ -94,7 +81,4 @@ async def serverusagebw(body: ServerusagebwJsonReq):
     nbdays: float = body.nbdays
     nbhours: float = body.nbhours
     nblisteners: float = body.nblisteners
-    result: float = await compute_serverusagebw(
-        bitrate=bitrate, nbdays=nbdays,
-        nbhours=nbhours, nblisteners=nblisteners)
-    return {'result': result}
+    return {'result': 28125 * nbdays * nbhours * bitrate * nblisteners / 65536}

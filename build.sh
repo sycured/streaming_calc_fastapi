@@ -3,10 +3,13 @@ set -xe
 
 mkbuild=$(buildah from docker.io/centos:latest)
 buildah run "$mkbuild" -- dnf upgrade -y
-buildah run "$mkbuild" -- dnf install python3 python3-pip python3-devel make gcc -y
+buildah run "$mkbuild" -- dnf install curl gcc make python3 python3-pip python3-devel -y
 mntbuild=$(buildah mount "$mkbuild")
 mkdir "$mntbuild"/dependencies
 cp requirements.txt "$mntbuild"/opt
+buildah run "$mkbuild" -- bash -c "curl --proto '=https' --tlsv1.2 -sSf -o /tmp/rustup.sh https://sh.rustup.rs && chmod +x /tmp/rustup.sh && /tmp/rustup.sh -y && echo 'PATH=$HOME/.cargo/env:$PATH' >> ~/.bashrc"
+buildah run "$mkbuild" -- bash -c "source $HOME/.cargo/env && rustup default nightly"
+buildah run "$mkbuild" -- pip3 install --no-cache-dir --install-option="--prefix=/dependencies" maturin
 buildah run "$mkbuild" -- pip3 install --no-cache-dir --install-option="--prefix=/dependencies" -r /opt/requirements.txt
 
 mkfinal=$(buildah from scratch)

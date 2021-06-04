@@ -1,0 +1,17 @@
+{
+    "listeners": {
+        "*:8000": {
+            "pass": "applications/scfa"
+        }
+    },
+
+    "applications": {
+        "scfa": {
+            "type": "python 3.9",
+            "path": "/opt",
+            "home": "/usr/local",
+            "module": "main",
+            "callable": "app"
+        }
+    }
+}

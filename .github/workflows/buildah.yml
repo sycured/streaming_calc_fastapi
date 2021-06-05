@@ -1,0 +1,42 @@
+name: 'ci'
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  buildah:
+    name: 'buildah'
+    runs-on: ubuntu-20.04
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Add repository for Buildah
+      run: |
+        echo "deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/ /" | sudo tee /etc/apt/sources.list.d/containers.list
+        wget -qO - 'https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/Release.key' | sudo apt-key add -
+        sudo apt-get update
+        sudo apt-get install buildah -y
+        sudo sed -i 's/driver = "overlay"/driver = "vfs"/g' /etc/containers/storage.conf
+
+    - name: Registry - Login
+      env:
+        githubtoken: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "$githubtoken" | sudo buildah login -u sycured --password-stdin ghcr.io
+
+    - name: Build
+      run: sudo ./run.sh
+
+    - name: Push to registry
+      run: sudo buildah push scfa:latest docker://ghcr.io/sycured/scfa:latest
+
+    - name: Registry - Logout
+      run: sudo buildah logout ghcr.io

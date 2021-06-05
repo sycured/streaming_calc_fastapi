@@ -33,7 +33,7 @@ jobs:
         echo "$githubtoken" | sudo buildah login -u sycured --password-stdin ghcr.io
 
     - name: Build
-      run: sudo ./run.sh
+      run: sudo ./build.sh
 
     - name: Push to registry
       run: sudo buildah push scfa:latest docker://ghcr.io/sycured/scfa:latest
